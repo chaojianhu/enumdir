@@ -1,0 +1,63 @@
+4-way set associative L1 d-TLB (4 entries, 1G page)
+4-way set associative L1 d-TLB (32 entries, 2M page 4M page)
+4-way set associative L1 d-TLB (64 entries, 4K page)
+L1 i-TLB (8 entries, 2M page 4M page)
+8-way set associative L1 i-TLB (64 entries, 4K page)
+64B prefetch
+4-way set associative L2 TLB (16 entries, 1G page)
+6-way set associative L2 TLB (1536 entries, 4K page 2M page)
+8-way set associative L1 d-cache (32K, 64B line size)
+8-way set associative L1 i-cache (32K, 64B line size)
+4-way set associative L2 cache (256K, 64B line size)
+12-way set associative L3 cache (3M, 64B line size. inclusive)
+Detected CPU name: Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz (Skylake)
+
+probing 1600 [#]
+found PL1 cache entries: 1600
+probing 1568 [#]
+found PL2 cache entries: 1568
+probing 20 [#]
+found PL3 cache entries: 20
+probing 0 [#]
+found PL4 cache entries: 0
+
+
+
+
+
+
+4-way set associative L1 d-TLB (4 entries, 1G page)
+4-way set associative L1 d-TLB (32 entries, 2M page 4M page)
+4-way set associative L1 d-TLB (64 entries, 4K page)
+L1 i-TLB (8 entries, 2M page 4M page)
+8-way set associative L1 i-TLB (64 entries, 4K page)
+64B prefetch
+4-way set associative L2 TLB (16 entries, 1G page)
+6-way set associative L2 TLB (1536 entries, 4K page 2M page)
+8-way set associative L1 d-cache (32K, 64B line size)
+8-way set associative L1 i-cache (32K, 64B line size)
+4-way set associative L2 cache (256K, 64B line size)
+12-way set associative L3 cache (3M, 64B line size. inclusive)
+Settings:
+  runs: 1
+  rounds: 10
+  page format: default
+  cache size: 3M
+  cache line size: 64B
+
+Detected CPU name: Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz
+
+Target VA: 0x3f6c6c180000
+
+ ---- RUN 0 ----
+level	best line	best page	slot	expected	va
+1	48		0		384	384		0x0000000000180000 [OK]
+2	44		0		352	352		0x000000002c180000 [OK]
+3	54		1		433	433		0x0000006c6c180000 [OK]
+4	15		6		126	126		0x00003f6c6c180000 [OK]
+Guessed VA: 0x3f6c6c180000
+
+ ---- STATISTICS ----
+Failures: 0 (0.000000%, 1 total)
+Slot errors: 0 (0.000000%, 4 total, 0.000000 per run)
+Total slot error distances: 0 (0.000000 per run)

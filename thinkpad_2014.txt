@@ -1,0 +1,61 @@
+4-way set associative L1 d-TLB (32 entries, 2M page 4M page)
+4-way set associative L1 d-TLB (64 entries, 4K page)
+L1 i-TLB (8 entries, 2M page 4M page)
+4-way set associative L1 i-TLB (64 entries, 4K page)
+64B prefetch
+4-way set associative L2 TLB (512 entries, 4K page)
+8-way set associative L1 d-cache (32K, 64B line size)
+8-way set associative L1 i-cache (32K, 64B line size)
+8-way set associative L2 cache (256K, 64B line size)
+12-way set associative L3 cache (3M, 64B line size. inclusive)
+Detected CPU name: Intel(R) Core(TM) i5-3380M CPU @ 2.90GHz (Ivy Bridge)
+
+probing 576 [#]
+found PL1 cache entries: 576
+probing 32 [#]
+found PL2 cache entries: 32
+probing 0 [.]
+probing 1 [.]
+probing 2 [#]
+found PL3 cache entries: 2
+probing 0 [#]
+found PL4 cache entries: 0
+
+
+
+
+
+
+4-way set associative L1 d-TLB (32 entries, 2M page 4M page)
+4-way set associative L1 d-TLB (64 entries, 4K page)
+L1 i-TLB (8 entries, 2M page 4M page)
+4-way set associative L1 i-TLB (64 entries, 4K page)
+64B prefetch
+4-way set associative L2 TLB (512 entries, 4K page)
+8-way set associative L1 d-cache (32K, 64B line size)
+8-way set associative L1 i-cache (32K, 64B line size)
+8-way set associative L2 cache (256K, 64B line size)
+12-way set associative L3 cache (3M, 64B line size. inclusive)
+Settings:
+  runs: 1
+  rounds: 10
+  page format: default
+  cache size: 3M
+  cache line size: 64B
+
+Detected CPU name: Intel(R) Core(TM) i5-3380M CPU @ 2.90GHz
+
+Target VA: 0x2ae9217cf000
+
+ ---- RUN 0 ----
+level	best line	best page	slot	expected	va
+1	57		7		463	463		0x00000000001cf000 [OK]
+2	33		3		267	267		0x00000000217cf000 [OK]
+3	16		6		134	420		0x00000021a17cf000 [!!]
+4	12		5		101	85		0x000032a1a17cf000 [!!]
+Guessed VA: 0x32a1a17cf000
+
+ ---- STATISTICS ----
+Failures: 1 (100.000000%, 1 total)
+Slot errors: 2 (50.000000%, 4 total, 2.000000 per run)
+Total slot error distances: 302 (302.000000 per run)
