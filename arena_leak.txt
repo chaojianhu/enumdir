@@ -1,0 +1,223 @@
+surfacebook@surfacebook:~/test_vul2$ ./arena_leak
+write, libc, main_arena: 0x7fdf8f6b11d0, 0x7fdf8f5a0000, 0x7fdf8f78bb80
+c[0], c[1], c[2], c[3]: 0x7fdf8f78bce0, 0x7fdf8f78bce0, (nil), (nil)
+u[0], u[1], u[2], u[3]: (nil), 0xc1, 0x7fdf8f78bbe0, 0x7fdf8f78bbe0
+success!
+success!
+surfacebook@surfacebook:~/test_vul2$ gdb arena_leak
+GNU gdb (Ubuntu 9.2-0ubuntu1~20.04.1) 9.2
+Copyright (C) 2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+pwndbg: loaded 198 commands. Type pwndbg [filter] for a list.
+pwndbg: created $rebase, $ida gdb functions (can be used with print/break)
+Reading symbols from arena_leak...
+pwndbg> b arena_leak.c:34
+Breakpoint 1 at 0x13c4: file arena_leak.c, line 34.
+pwndbg> r
+Starting program: /home/surfacebook/test_vul2/arena_leak
+write, libc, main_arena: 0x7fffff6c11d0, 0x7fffff5b0000, 0x7fffff79bb80
+c[0], c[1], c[2], c[3]: 0x7fffff79bce0, 0x7fffff79bce0, (nil), (nil)
+u[0], u[1], u[2], u[3]: (nil), 0xc1, 0x7fffff79bbe0, 0x7fffff79bbe0
+
+Breakpoint 1, main (argc=1, argv=0x7ffffffee278) at arena_leak.c:34
+34              if(main_arena_leak == c[0] - 0x160){
+LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA
+────────────────────────────────────────────────────────────[ REGISTERS ]─────────────────────────────────────────────────────────────
+ RAX  0x44
+ RBX  0x8001450 (__libc_csu_init) ◂— endbr64  /* 0x8d4c5741fa1e0ff3 */
+ RCX  0x0
+ RDX  0x0
+ RDI  0x7fffff79e4c0 (_IO_stdfile_1_lock) ◂— 0x0
+ RSI  0x7ffffffeba50 ◂— 'u[0], u[1], u[2], u[3]: (nil), 0xc1, 0x7fffff79bbe0, 0x7fffff79bbe0\n\n80\n'
+ R8   0x44
+ R9   0x44
+ R10  0x800207e ◂— 0x736563637573000a /* '\n' */
+ R11  0x800207e ◂— 0x736563637573000a /* '\n' */
+ R12  0x8001100 (_start) ◂— endbr64  /* 0x8949ed31fa1e0ff3 */
+ R13  0x7ffffffee270 ◂— 0x1
+ R14  0x0
+ R15  0x0
+ RBP  0x7ffffffee180 ◂— 0x0
+ RSP  0x7ffffffee0f0 —▸ 0x7ffffffee278 —▸ 0x7ffffffee4af ◂— '/home/surfacebook/test_vul2/arena_leak'
+ RIP  0x80013c4 (main+475) ◂— mov    rax, qword ptr [rbp - 0x50] /* 0x48008b48b0458b48 */
+──────────────────────────────────────────────────────────────[ DISASM ]──────────────────────────────────────────────────────────────
+ ► 0x80013c4 <main+475>    mov    rax, qword ptr [rbp - 0x50]
+   0x80013c8 <main+479>    mov    rax, qword ptr [rax]
+   0x80013cb <main+482>    sub    rax, 0x160
+   0x80013d1 <main+488>    cmp    qword ptr [rbp - 0x68], rax
+   0x80013d5 <main+492>    jne    main+508                     <main+508>
+
+   0x80013d7 <main+494>    lea    rdi, [rip + 0xca2]
+   0x80013de <main+501>    call   puts@plt                     <puts@plt>
+
+   0x80013e3 <main+506>    jmp    main+520                     <main+520>
+
+   0x80013e5 <main+508>    lea    rdi, [rip + 0xc9d]
+   0x80013ec <main+515>    call   puts@plt                     <puts@plt>
+
+   0x80013f1 <main+520>    mov    rax, qword ptr [rbp - 0x48]
+──────────────────────────────────────────────────────────[ SOURCE (CODE) ]───────────────────────────────────────────────────────────
+In file: /home/surfacebook/test_vul2/arena_leak.c
+   29   unsigned long long * c = (unsigned long long *)malloc(0x40);
+   30   unsigned long long * u = (unsigned long long *)((unsigned long long)c + 0x40);
+   31   printf("c[0], c[1], c[2], c[3]: %p, %p, %p, %p\n", (void*)c[0], (void*)c[1], (void*)c[2], (void*)c[3]);
+   32   printf("u[0], u[1], u[2], u[3]: %p, %p, %p, %p\n", (void*)u[0], (void*)u[1], (void*)u[2], (void*)u[3]);
+   33
+ ► 34   if(main_arena_leak == c[0] - 0x160){
+   35           printf("success!\n");
+   36   } else {
+   37           printf("failed!\n");
+   38   }
+   39
+──────────────────────────────────────────────────────────────[ STACK ]───────────────────────────────────────────────────────────────
+00:0000│ rsp 0x7ffffffee0f0 —▸ 0x7ffffffee278 —▸ 0x7ffffffee4af ◂— '/home/surfacebook/test_vul2/arena_leak'
+01:0008│     0x7ffffffee0f8 ◂— 0x100000000
+02:0010│     0x7ffffffee100 ◂— 0x700000007
+03:0018│     0x7ffffffee108 —▸ 0x7fffff5b0000 ◂— 0x3010102464c457f
+04:0020│     0x7ffffffee110 ◂— 0x0
+05:0028│     0x7ffffffee118 —▸ 0x7fffff79bb80 (main_arena) ◂— 0x0
+06:0030│     0x7ffffffee120 —▸ 0x8005a10 —▸ 0x7fffff79bce0 (main_arena+352) —▸ 0x7fffff79bcd0 (main_arena+336) —▸ 0x7fffff79bcc0 (main_arena+320) ◂— ...
+07:0038│     0x7ffffffee128 —▸ 0x8005b20 ◂— 0x0
+────────────────────────────────────────────────────────────[ BACKTRACE ]─────────────────────────────────────────────────────────────
+ ► f 0        0x80013c4 main+475
+   f 1   0x7fffff5d70b3 __libc_start_main+243
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+pwndbg> bins
+tcachebins
+0x110 [  7]: 0x8005900 —▸ 0x80057f0 —▸ 0x80056e0 —▸ 0x80055d0 —▸ 0x80054c0 —▸ 0x80053b0 —▸ 0x80052a0 ◂— 0x0
+fastbins
+0x20: 0x0
+0x30: 0x0
+0x40: 0x0
+0x50: 0x0
+0x60: 0x0
+0x70: 0x0
+0x80: 0x0
+unsortedbin
+all: 0x8005a50 —▸ 0x7fffff79bbe0 (main_arena+96) ◂— 0x8005a50 /* 'PZ' */
+smallbins
+empty
+largebins
+empty
+pwndbg> heap -v
+Allocated chunk | PREV_INUSE
+Addr: 0x8005000
+prev_size: 0x00
+size: 0x291
+fd: 0x00
+bk: 0x00
+fd_nextsize: 0x00
+bk_nextsize: 0x7000000000000
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x8005290
+prev_size: 0x00
+size: 0x111
+fd: 0x00
+bk: 0x8005010
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x80053a0
+prev_size: 0x00
+size: 0x111
+fd: 0x80052a0
+bk: 0x8005010
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x80054b0
+prev_size: 0x00
+size: 0x111
+fd: 0x80053b0
+bk: 0x8005010
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x80055c0
+prev_size: 0x00
+size: 0x111
+fd: 0x80054c0
+bk: 0x8005010
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x80056d0
+prev_size: 0x00
+size: 0x111
+fd: 0x80055d0
+bk: 0x8005010
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x80057e0
+prev_size: 0x00
+size: 0x111
+fd: 0x80056e0
+bk: 0x8005010
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Free chunk (tcache) | PREV_INUSE
+Addr: 0x80058f0
+prev_size: 0x00
+size: 0x111
+fd: 0x80057f0
+bk: 0x8005010
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Allocated chunk | PREV_INUSE
+Addr: 0x8005a00
+prev_size: 0x00
+size: 0x51
+fd: 0x7fffff79bce0
+bk: 0x7fffff79bce0
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Free chunk (unsortedbin) | PREV_INUSE
+Addr: 0x8005a50
+prev_size: 0x00
+size: 0xc1
+fd: 0x7fffff79bbe0
+bk: 0x7fffff79bbe0
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Allocated chunk
+Addr: 0x8005b10
+prev_size: 0xc0
+size: 0x110
+fd: 0x00
+bk: 0x00
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+Top chunk | PREV_INUSE
+Addr: 0x8005c20
+prev_size: 0x00
+size: 0x203e1
+fd: 0x00
+bk: 0x00
+fd_nextsize: 0x00
+bk_nextsize: 0x00
+
+pwndbg>
